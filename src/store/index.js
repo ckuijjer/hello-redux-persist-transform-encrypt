@@ -3,6 +3,8 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
 import createEncryptor from 'redux-persist-transform-encrypt'
 
+import { getEncryptionKey } from '../encryption'
+
 import counter from './counter'
 
 const reducers = combineReducers({
@@ -10,7 +12,7 @@ const reducers = combineReducers({
 })
 
 const encryptor = createEncryptor({
-  secretKey: 'my-super-secret-key',
+  secretKey: getEncryptionKey(),
   onError: err =>
     console.error(`redux-persist-transform-encrypt error: ${err}`),
 })
