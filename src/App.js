@@ -1,11 +1,14 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import store from './store'
+import { PersistGate } from 'redux-persist/integration/react'
+import store, { persistor } from './store'
 import Counter from './Counter'
 
 const App = () => (
   <Provider store={store}>
-    <Counter />
+    <PersistGate persistor={persistor}>
+      <Counter />
+    </PersistGate>
   </Provider>
 )
 
