@@ -10,6 +10,7 @@ import { getEncryptionKey, setEncryptionKey } from './encryption'
 import Counter from './Counter'
 import Todo from './Todo'
 import EncryptionCard from './EncryptionCard'
+import CookieInformation from './CookieInformation'
 
 const App = () => (
   <CookiesProvider>
@@ -30,6 +31,9 @@ const App = () => (
                     encryptionKey={getEncryptionKey()}
                     onSetEncryptionKey={setEncryptionKey}
                   />
+                </Col>
+                <Col span={8}>
+                  <CookieInformation />
                 </Col>
               </Row>
             </div>

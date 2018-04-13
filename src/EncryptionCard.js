@@ -1,10 +1,11 @@
 import React from 'react'
 import { Input, Button, Card } from 'antd'
+import { expiresAfterSeconds } from './encryption'
 
 export default class EncryptionCard extends React.Component {
   state = {
     encryptionKey: '',
-    maxAge: 60,
+    seconds: 60,
   }
 
   static getDerivedStateFromProps = ({ encryptionKey }) => ({ encryptionKey })
@@ -13,8 +14,8 @@ export default class EncryptionCard extends React.Component {
     this.setState({ encryptionKey: e.target.value })
   }
 
-  changeMaxAge = e => {
-    this.setState({ maxAge: e.target.value })
+  changeSeconds = e => {
+    this.setState({ seconds: e.target.value })
   }
 
   render() {
@@ -30,15 +31,15 @@ export default class EncryptionCard extends React.Component {
         />
         Max Age (expires in 𝓃 seconds):
         <Input
-          value={this.state.maxAge}
-          onChange={this.changeMaxAge}
+          value={this.state.seconds}
+          onChange={this.changeSeconds}
           style={{ marginBottom: 16 }}
         />
         <Button
           onClick={() =>
             onSetEncryptionKey({
               encryptionKey: this.state.encryptionKey,
-              maxAge: this.state.maxAge,
+              expires: expiresAfterSeconds(this.state.seconds),
             })
           }
         >

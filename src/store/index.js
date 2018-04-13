@@ -51,10 +51,12 @@ const persistConfig = {
   key: 'root',
   storage,
   transforms: [
-    createLogger('A', 'counter'),
+    // createLogger('A', 'counter'),
+    // createLogger('A', 'todos'),
     // nullStateRemover,
-    encryptor,
-    createLogger('B', 'counter'),
+    // encryptor,
+    // createLogger('B', 'todos'),
+    // createLogger('B', 'counter'),
   ], // persist is left to right, rehydrate is right to left
 }
 
