@@ -2,6 +2,7 @@ import { createStore, combineReducers } from 'redux'
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
 import createEncryptor from 'redux-persist-transform-encrypt'
+import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1'
 
 import { getEncryptionKey } from '../encryption'
 
@@ -14,7 +15,6 @@ const reducers = combineReducers({
 })
 
 const secretKey = getEncryptionKey()
-console.log('🔑', secretKey)
 
 const encryptor = createEncryptor({
   secretKey,
@@ -23,41 +23,39 @@ const encryptor = createEncryptor({
   },
 })
 
-const createLogger = (prefix, keyInterest) =>
-  createTransform(
-    (state, key) => {
-      if (key === keyInterest) console.log(`${prefix} persist ${key}`, state)
-      return state
-    },
-    (state, key) => {
-      if (key === keyInterest) console.log(`${prefix} rehydrate ${key}`, state)
-      return state
-    },
+const myStateReconciler = (
+  inboundState,
+  originalState,
+  reducedState,
+  options,
+) => {
+  // If decryption fails redux-persist-transform-encrypt will return null. Here we'll simply remove those keys
+  // from the inboundState before passing it to redux-persists default stateReducer, thus making it return the originalState.
+  // A caveat is that this makes it impossible for a state that's null to be persisted properly. To fix this it might be an idea to
+  // have the onError option of createEncryptor keep track of for which keys the decryption failed, and to only remove those keys
+  // from the originalState.
+  Object.entries(inboundState).forEach(([key, value]) => {
+    if (value === null) {
+      delete inboundState[key]
+    }
+  })
+
+  const reconciledState = autoMergeLevel1(
+    inboundState,
+    originalState,
+    reducedState,
+    options,
   )
 
-const nullStateRemover = createTransform(
-  state => state, // when persisting don't do anything
-  (state, key) => {
-    if (key === 'counter' && state === null) {
-      console.log('trying to remove the counter')
-      return undefined
-    } else {
-      return state
-    }
-  },
-)
+  return reconciledState
+}
 
 const persistConfig = {
   key: 'root',
   storage,
-  transforms: [
-    // createLogger('A', 'counter'),
-    // createLogger('A', 'todos'),
-    // nullStateRemover,
-    // encryptor,
-    // createLogger('B', 'todos'),
-    // createLogger('B', 'counter'),
-  ], // persist is left to right, rehydrate is right to left
+  transforms: [encryptor], // persist is left to right, rehydrate is right to left
+  debug: true,
+  stateReconciler: myStateReconciler,
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)
