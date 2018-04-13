@@ -6,9 +6,11 @@ import createEncryptor from 'redux-persist-transform-encrypt'
 import { getEncryptionKey } from '../encryption'
 
 import counter from './counter'
+import todos from './todos'
 
 const reducers = combineReducers({
   counter,
+  todos,
 })
 
 const secretKey = getEncryptionKey()

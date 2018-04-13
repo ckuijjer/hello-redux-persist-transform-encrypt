@@ -8,6 +8,7 @@ import store, { persistor } from './store'
 import { getEncryptionKey, setEncryptionKey } from './encryption'
 
 import Counter from './Counter'
+import Todo from './Todo'
 import EncryptionCard from './EncryptionCard'
 
 const App = () => (
@@ -21,7 +22,10 @@ const App = () => (
                 <Col span={8}>
                   <Counter />
                 </Col>
-                <Col span={16}>
+                <Col span={8}>
+                  <Todo />
+                </Col>
+                <Col span={8}>
                   <EncryptionCard
                     encryptionKey={getEncryptionKey()}
                     onSetEncryptionKey={setEncryptionKey}
