@@ -2,19 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { increment, decrement } from './store/counter'
-import { Button, Card } from 'antd'
+
+import { Button, Card, ButtonGroup, Header } from './UIComponents'
 
 const Counter = ({ counter, increment, decrement }) => (
   <Card title="Counter">
-    <div style={{ fontSize: 72, textAlign: 'center' }}>{counter}</div>
-    <div style={{ display: 'flex' }}>
-      <Button onClick={decrement} style={{ flex: 1 }}>
-        -
-      </Button>
-      <Button onClick={increment} style={{ flex: 1, marginLeft: 16 }}>
-        +
-      </Button>
-    </div>
+    <Header>{counter}</Header>
+    <ButtonGroup>
+      <Button onClick={decrement}>-</Button>
+      <Button onClick={increment}>+</Button>
+    </ButtonGroup>
   </Card>
 )
 

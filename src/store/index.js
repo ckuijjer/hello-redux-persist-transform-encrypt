@@ -51,8 +51,6 @@ const myStateReconciler = (
     options,
   )
 
-  console.log('🚙', reconciledState)
-
   return reconciledState
 }
 
