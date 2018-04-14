@@ -1,29 +1,27 @@
 import { createStore, combineReducers } from 'redux'
 import { persistStore, persistReducer, createTransform } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
-import createEncryptor from 'redux-persist-transform-encrypt'
+import storage from 'redux-persist/lib/storage'
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1'
+import createEncryptor from 'redux-persist-transform-encrypt'
 
-import { getEncryptionKey, setEncryptionKey } from '../encryption'
-
+import { readFromCookie, storeInCookie, generate } from '../key'
 import counter from './counter'
 
 const reducers = combineReducers({
   counter,
 })
 
-const secretKey = getEncryptionKey()
+const key = readFromCookie() || generate()
 
 const encryptor = createEncryptor({
-  secretKey,
+  secretKey: key,
   onError: err => {
-    console.error(`redux-persist-transform-encrypt error: ${err}`)
+    console.log(`redux-persist-transform-encrypt error: ${err}`)
   },
 })
 
 const myTransform = createTransform(state => {
-  // as a side effect store the cookie
-  setEncryptionKey({ encryptionKey: secretKey })
+  storeInCookie(key) // as a side effect store the cookie
   return state
 }, state => state)
 
@@ -68,6 +66,6 @@ const store = createStore(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 )
 
-export default store
-
 export const persistor = persistStore(store)
+
+export default store
