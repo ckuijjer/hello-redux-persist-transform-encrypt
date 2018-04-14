@@ -2,14 +2,13 @@ import Cookies from 'universal-cookie'
 import moment from 'moment'
 
 export const ENCRYPTION_KEY = 'persist:encryptionKey'
-export const EXPIRES_AT = 'persist:expiresAt' // just for logging it to the UI
 
 const cookies = new Cookies()
 
-export const getEncryptionKey = () =>
-  cookies.get(ENCRYPTION_KEY) || 'my secret key'
+const generateNewKey = () => Math.random().toString() // don't use this in production
 
-export const getEncryptionKeyExpiry = () => cookies.get(EXPIRES_AT)
+export const getEncryptionKey = () =>
+  cookies.get(ENCRYPTION_KEY) || generateNewKey()
 
 export const expiresAfterSeconds = seconds => moment().add(seconds, 'seconds')
 
@@ -21,5 +20,4 @@ export const setEncryptionKey = ({
     path: '/',
     expires: expires.toDate(),
   })
-  cookies.set(EXPIRES_AT, expires, { path: '/', expires: expires.toDate() }) // just for logging it to the UI
 }

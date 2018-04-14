@@ -4,14 +4,12 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 import createEncryptor from 'redux-persist-transform-encrypt'
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1'
 
-import { getEncryptionKey } from '../encryption'
+import { getEncryptionKey, setEncryptionKey } from '../encryption'
 
 import counter from './counter'
-import todos from './todos'
 
 const reducers = combineReducers({
   counter,
-  todos,
 })
 
 const secretKey = getEncryptionKey()
@@ -22,6 +20,12 @@ const encryptor = createEncryptor({
     console.error(`redux-persist-transform-encrypt error: ${err}`)
   },
 })
+
+const myTransform = createTransform(state => {
+  // as a side effect store the cookie
+  setEncryptionKey({ encryptionKey: secretKey })
+  return state
+}, state => state)
 
 const myStateReconciler = (
   inboundState,
@@ -47,14 +51,15 @@ const myStateReconciler = (
     options,
   )
 
+  console.log('🚙', reconciledState)
+
   return reconciledState
 }
 
 const persistConfig = {
   key: 'root',
   storage,
-  transforms: [encryptor], // persist is left to right, rehydrate is right to left
-  debug: true,
+  transforms: [encryptor, myTransform], // persist is left to right, rehydrate is right to left
   stateReconciler: myStateReconciler,
 }
 
