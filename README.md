@@ -4,7 +4,7 @@ This is a demo showing how to persist and rehydrate a redux store in localStorag
 
 ## Why is this needed?
 
-localStorage might be used to store privacy sensitive information
+localStorage can be used to store privacy sensitive information, but doesn't have a mechanism where it's contents get emptied after a certain amount of time.
 
 ## How to demo
 
