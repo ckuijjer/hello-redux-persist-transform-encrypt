@@ -25,31 +25,19 @@ const myTransform = createTransform(state => {
   return state
 }, state => state)
 
-const myStateReconciler = (
-  inboundState,
-  originalState,
-  reducedState,
-  options,
-) => {
-  // If decryption fails redux-persist-transform-encrypt will return null. Here we'll simply remove those keys
-  // from the inboundState before passing it to redux-persists default stateReducer, thus making it return the originalState.
-  // A caveat is that this makes it impossible for a state that's null to be persisted properly. To fix this it might be an idea to
-  // have the onError option of createEncryptor keep track of for which keys the decryption failed, and to only remove those keys
-  // from the originalState.
+// If decryption fails redux-persist-transform-encrypt will return null. Here we'll simply remove those keys
+// from the inboundState before passing it to redux-persists default stateReducer, thus making it return the originalState.
+// A caveat is that this makes it impossible for a state that's null to be persisted properly. To fix this it might be an idea to
+// have the onError option of createEncryptor keep track of for which keys the decryption failed, and to only remove those keys
+// from the originalState.
+const myStateReconciler = (inboundState, ...args) => {
   Object.entries(inboundState).forEach(([key, value]) => {
     if (value === null) {
       delete inboundState[key]
     }
   })
 
-  const reconciledState = autoMergeLevel1(
-    inboundState,
-    originalState,
-    reducedState,
-    options,
-  )
-
-  return reconciledState
+  return autoMergeLevel1(inboundState, ...args)
 }
 
 const persistConfig = {
